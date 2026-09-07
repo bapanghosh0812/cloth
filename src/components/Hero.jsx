@@ -1,28 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useImageSequence } from '../hooks/useImageSequence';
 
-// Import product images
-import shirtImg from '../assets/hero_product/shirt.png';
-import pantImg from '../assets/hero_product/pant.png';
-import shoesImg from '../assets/hero_product/shoes.png';
+import { useStore } from '../context/StoreContext';
+import { getById, formatPrice } from '../data/products';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Hero cards are backed by real catalog products so Add-to-Bag / Wishlist actually work.
 const products = [
-  { id: 1, name: "Premium Shirt", price: "199$", image: shirtImg, frame: 76, align: 'left' },
-  { id: 2, name: "Premium Pant", price: "149$", image: pantImg, frame: 153, align: 'right' },
-  { id: 3, name: "Premium Shoes", price: "299$", image: shoesImg, frame: 239, align: 'left' }
+  { ...getById('p1'), frame: 76, align: 'left' },
+  { ...getById('p2'), frame: 153, align: 'right' },
+  { ...getById('p3'), frame: 239, align: 'left' },
 ];
 
 const ProductCard = React.memo(React.forwardRef(({ product }, ref) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [inCart, setInCart] = useState(false);
+  const { addToCart, toggleWishlist, isWished, openQuickView } = useStore();
+  const isFavorite = isWished(product.id);
 
-  const alignClass = product.align === 'right' 
-    ? 'right-8 md:right-16 lg:right-32' 
+  const alignClass = product.align === 'right'
+    ? 'right-8 md:right-16 lg:right-32'
     : 'left-8 md:left-16 lg:left-32';
 
   return (
@@ -36,7 +35,7 @@ const ProductCard = React.memo(React.forwardRef(({ product }, ref) => {
       <div className="bg-[#f0f0f0] relative flex flex-col justify-center items-center">
         {/* Heart Icon */}
         <div
-          onClick={() => setIsFavorite(!isFavorite)}
+          onClick={() => toggleWishlist(product)}
           className={`absolute top-4 right-4 z-10 p-2.5 rounded-full cursor-pointer transition-colors shadow-sm ${isFavorite ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-[#242424] text-white hover:bg-black'
             }`}
         >
@@ -45,10 +44,11 @@ const ProductCard = React.memo(React.forwardRef(({ product }, ref) => {
           </svg>
         </div>
         {/* Product Image */}
-        <img 
-          src={product.image} 
-          alt={product.name} 
-          className="w-full h-56 md:h-64 object-contain p-2 pointer-events-none" 
+        <img
+          src={product.image}
+          alt={product.name}
+          onClick={() => openQuickView(product)}
+          className="w-full h-56 md:h-64 object-contain p-2 cursor-pointer"
         />
       </div>
 
@@ -56,26 +56,20 @@ const ProductCard = React.memo(React.forwardRef(({ product }, ref) => {
       <div className="p-6 flex flex-col gap-4 text-white">
         <div>
           <h3 className="text-2xl font-bold tracking-tight">{product.name}</h3>
-          <p className="text-zinc-400 text-sm mt-1">Exclusive Collection</p>
+          <p className="text-[#c6a15b] text-sm mt-1">{product.brand}</p>
         </div>
 
         <div className="flex justify-between items-center mt-2">
-          <span className="text-[28px] font-bold tracking-tight">{product.price}</span>
+          <span className="text-[28px] font-bold tracking-tight">{formatPrice(product.price)}</span>
           <button
-            onClick={() => setInCart(!inCart)}
-            className={`p-3.5 rounded-[1.25rem] transition-colors shadow-md ${inCart ? 'bg-black text-white hover:bg-zinc-800' : 'bg-white text-black hover:bg-gray-200'
-              }`}
+            onClick={() => addToCart(product)}
+            aria-label="Add to bag"
+            className="p-3.5 rounded-[1.25rem] transition-colors shadow-md bg-[#c6a15b] text-black hover:bg-[#d8b877]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {inCart ? (
-                <path d="M20 6L9 17l-5-5" />
-              ) : (
-                <>
-                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                  <path d="M3 6h18" />
-                  <path d="M16 10a4 4 0 0 1-8 0" />
-                </>
-              )}
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
           </button>
         </div>
@@ -359,7 +353,10 @@ const Hero = () => {
           <p className="text-black text-lg md:text-xl max-w-md font-medium mb-10 leading-relaxed">
             Future-ready streetwear crafted for creators, trendsetters, and everyday explorers.
           </p>
-          <button className="bg-red-600 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-3 hover:bg-black transition-colors shadow-lg">
+          <button
+            onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}
+            className="bg-red-600 text-white px-8 py-4 rounded-full font-semibold flex items-center gap-3 hover:bg-black transition-colors shadow-lg"
+          >
             Discover The Collection
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
           </button>

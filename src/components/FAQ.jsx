@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import img1 from '../assets/shop/image.png';
 import img2 from '../assets/shop/image copy.png';
 import img3 from '../assets/shop/image copy 2.png';
@@ -42,9 +42,12 @@ const FAQ = () => {
 
   return (
     <section className="w-screen max-w-[100vw] bg-white pt-24 pb-32 overflow-hidden">
-      <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-black text-center mb-24 uppercase">
-        Frequently Asked Questions
-      </h2>
+      <div className="text-center mb-20">
+        <p className="text-[#a17c2e] text-[12px] font-semibold uppercase tracking-[0.3em] mb-3">Good to Know</p>
+        <h2 className="font-display text-4xl md:text-6xl tracking-tight text-black">
+          Frequently Asked Questions
+        </h2>
+      </div>
       
       <div className="w-full flex flex-col border-t border-gray-200">
         {faqs.map((faq, index) => (

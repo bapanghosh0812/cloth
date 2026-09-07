@@ -1,16 +1,43 @@
-# React + Vite
+# WEARSUPER — Luxury Streetwear Store
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, fully interactive e-commerce experience built with **React 19 + Vite + Tailwind CSS v4 + GSAP**. It pairs a cinematic, scroll-driven image-sequence hero with a complete (demo) shopping flow — cart, login, checkout, payment simulation and order history — all running entirely in the browser.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Cinematic hero** — 240-frame scroll-scrubbed image sequence (Apple-style) with a custom preloader and intro animation.
+- **Working cart** — add from the hero, the shop grid or quick-view; slide-in bag with quantity controls, live subtotal and free-shipping threshold. Badge count in the navbar.
+- **Demo login / signup** — any email + password works, plus a one-tap "Continue as Guest". Session persists across refreshes. *(No real credentials are stored or sent.)*
+- **Multi-step checkout** — Shipping → Payment → Review → Confirmation, with a **simulated** payment (test card `4242 4242 4242 4242`). No real payment gateway; card details never leave the browser and only the brand + last-4 are kept with the order.
+- **Order history** — placed orders are saved and shown in the account panel.
+- **Search overlay** — instant product search with trending suggestions.
+- **Wishlist** — save/remove items, badge count, dedicated drawer.
+- **Product quick-view** — gallery, size & colour selection, ratings, quantity, add-to-bag.
+- **Shop filters** — filter the catalogue by category; the collection tiles deep-link into a filtered shop.
+- **Premium polish** — Playfair Display + Manrope typography, champagne-gold accent system, announcement bar, trust-badge strip, toast notifications, responsive layout and a mobile menu.
 
-## React Compiler
+All shopping state (cart, wishlist, orders, session) persists in `localStorage`, so nothing is lost on refresh.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🧱 Tech
 
-## Expanding the ESLint configuration
+- React 19 · Vite · Tailwind CSS v4 · GSAP (ScrollTrigger)
+- Global state via a single React Context (`src/context/StoreContext.jsx`)
+- Product catalogue in `src/data/products.js`
+- Feature overlays in `src/components/ui/`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Getting started
+
+```bash
+npm install
+npm run dev
+```
+
+Then open the printed local URL (usually `http://localhost:5173`).
+
+```bash
+npm run build     # production build
+npm run preview   # preview the production build
+```
+
+## ⚠️ Demo note
+
+This is a front-end demo. Login, payment and order placement are **simulated** and run only in your browser — there is no backend, no real authentication and no real payment processing. Do not enter real card details.
