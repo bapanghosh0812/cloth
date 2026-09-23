@@ -1,6 +1,6 @@
-import menImg from '../assets/collection/men.png';
-import womenImg from '../assets/collection/women.png';
-import kidsImg from '../assets/collection/kids.png';
+import menImg from '../assets/collection/men.webp';
+import womenImg from '../assets/collection/women.webp';
+import kidsImg from '../assets/collection/kids.webp';
 import { useStore } from '../context/StoreContext';
 
 const Collection = () => {
@@ -29,6 +29,8 @@ const Collection = () => {
             <img
               src={item.image}
               alt={`${item.title}'s Collection`}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
 

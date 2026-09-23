@@ -1,260 +1,291 @@
 // Central product catalog for the WEARSUPER luxury store (demo data).
-// Images are reused from the existing asset folders so nothing extra is needed.
+// Every product's gallery and 360° view are built from its own photo (see getGallery).
 
-import shirtImg from '../assets/hero_product/shirt.png';
-import pantImg from '../assets/hero_product/pant.png';
-import shoesImg from '../assets/hero_product/shoes.png';
+import shirtImg from '../assets/hero_product/shirt.webp';
+import pantImg from '../assets/hero_product/pant.webp';
+import shoesImg from '../assets/hero_product/shoes.webp';
 
-import shop1 from '../assets/shop/image.png';
-import shop2 from '../assets/shop/image copy.png';
-import shop3 from '../assets/shop/image copy 2.png';
-import shop4 from '../assets/shop/image copy 3.png';
-import shop5 from '../assets/shop/image copy 4.png';
-import shop6 from '../assets/shop/image copy 5.png';
+import shop1 from '../assets/shop/shop-1.webp';
+import shop2 from '../assets/shop/shop-2.webp';
+import shop3 from '../assets/shop/shop-3.webp';
+import shop4 from '../assets/shop/shop-4.webp';
+import shop5 from '../assets/shop/shop-5.webp';
+import shop6 from '../assets/shop/shop-6.webp';
 
-import menImg from '../assets/collection/men.png';
-import womenImg from '../assets/collection/women.png';
-import kidsImg from '../assets/collection/kids.png';
+import menImg from '../assets/collection/men.webp';
+import womenImg from '../assets/collection/women.webp';
+import kidsImg from '../assets/collection/kids.webp';
 
 // Public assets are referenced by URL.
-const jacketImg = '/collection/jacket.png';
-const pantsImg = '/collection/pants.png';
-const sneakerImg = '/collection/sneaker.png';
+const jacketImg = '/collection/jacket.webp';
 
 export const CATEGORIES = ['All', 'Men', 'Women', 'Kids', 'Footwear', 'Outerwear'];
 
-const NEUTRALS = [
-  { name: 'Onyx', hex: '#111111' },
-  { name: 'Ivory', hex: '#f4efe6' },
-  { name: 'Champagne', hex: '#c6a15b' },
-];
+const C = {
+  onyx: { name: 'Onyx', hex: '#111111' },
+  ivory: { name: 'Ivory', hex: '#f4efe6' },
+  graphite: { name: 'Graphite', hex: '#3a3a3c' },
+  crimson: { name: 'Crimson / Onyx', hex: '#9e1420' },
+  charcoal: { name: 'Charcoal Wash', hex: '#46464a' },
+  cobalt: { name: 'Cobalt', hex: '#3f6fae' },
+  forest: { name: 'Forest', hex: '#1f3b2c' },
+  lilac: { name: 'Lilac', hex: '#b89ad0' },
+};
 
 const APPAREL_SIZES = ['XS', 'S', 'M', 'L', 'XL'];
 const SHOE_SIZES = ['7', '8', '9', '10', '11', '12'];
+const KIDS_SIZES = ['2Y', '4Y', '6Y', '8Y'];
 
+// The first colour of each product is the one photographed.
 export const PRODUCTS = [
   {
     id: 'p1',
-    name: 'Aurelia Silk Shirt',
+    cutout: true,
+    name: 'Web-Slinger Zip Hoodie',
     brand: 'WEARSUPER Atelier',
     category: 'Men',
     price: 199,
     oldPrice: 249,
     image: shirtImg,
-    images: [shirtImg, shop1, shop3],
     rating: 4.9,
     reviews: 214,
     badge: 'Signature',
     sizes: APPAREL_SIZES,
-    colors: NEUTRALS,
+    colors: [C.crimson, C.onyx],
     featured: true,
     description:
-      'A future-ready silhouette cut from mulberry silk. Tailored to move, finished by hand, made to be noticed.',
-    details: ['100% Mulberry silk', 'Hand-finished seams', 'Relaxed premium fit', 'Dry clean only'],
+      'The hero piece of the Brand New Day collection. Heavyweight brushed fleece, contrast crimson sleeves and a raised spider emblem across the chest.',
+    details: ['480 gsm brushed cotton fleece', 'Raised puff-print emblem', 'Two-way metal zip', 'Relaxed, boxy fit'],
   },
   {
     id: 'p2',
-    name: 'Meridian Tailored Trouser',
+    cutout: true,
+    name: 'Night Patrol Cargo Jogger',
     brand: 'WEARSUPER Atelier',
     category: 'Men',
     price: 149,
     oldPrice: null,
     image: pantImg,
-    images: [pantImg, pantsImg, shop4],
     rating: 4.7,
     reviews: 168,
     badge: 'New',
     sizes: APPAREL_SIZES,
-    colors: NEUTRALS,
+    colors: [C.onyx, C.graphite],
     featured: true,
     description:
-      'The trouser that anchors every look. Structured drape, invisible comfort, endless versatility.',
-    details: ['Italian wool blend', 'Hidden stretch waistband', 'Tapered leg', 'Machine wash cold'],
+      'Utility cut, luxury finish. A six-pocket cargo jogger in soft stretch twill with tapered, cuffed hems.',
+    details: ['Stretch cotton twill', 'Six utility pockets', 'Elastic drawcord waist', 'Tapered leg, ribbed cuffs'],
   },
   {
     id: 'p3',
-    name: 'Velocity Runner',
+    cutout: true,
+    name: 'Crimson Web High-Top',
     brand: 'WEARSUPER Motion',
     category: 'Footwear',
     price: 299,
     oldPrice: 349,
     image: shoesImg,
-    images: [shoesImg, sneakerImg, shop2],
     rating: 5.0,
     reviews: 401,
     badge: 'Best Seller',
     sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    colors: [C.crimson, C.onyx],
     featured: true,
     description:
-      'Engineered for the city and beyond. Responsive cushioning wrapped in a sculpted, weightless upper.',
-    details: ['Responsive foam midsole', 'Recycled knit upper', 'Grip-lock outsole', 'True to size'],
+      'A heritage court silhouette in crimson and onyx full-grain leather, built on a cushioned cupsole for all-day wear.',
+    details: ['Full-grain leather upper', 'Padded high-top collar', 'Cushioned rubber cupsole', 'True to size'],
   },
   {
     id: 'p4',
-    name: 'Court Vision Leather',
-    brand: 'Nike',
-    category: 'Footwear',
-    price: 156,
+    name: 'Venom Wash Oversized Tee',
+    brand: 'WEARSUPER Heroes',
+    category: 'Men',
+    price: 95,
     oldPrice: null,
     image: shop1,
-    images: [shop1, shop3, sneakerImg],
     rating: 4.6,
     reviews: 122,
     badge: 'Best Seller',
-    sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    sizes: APPAREL_SIZES,
+    colors: [C.charcoal, C.onyx],
     featured: true,
-    description: 'Classic hoops style rebuilt in durable premium leather with a clean, timeless finish.',
-    details: ['Full-grain leather', 'Padded collar', 'Rubber cupsole', 'True to size'],
+    description: 'Hand acid-washed heavyweight jersey with an oversized spider graphic printed across the back.',
+    details: ['260 gsm cotton jersey', 'Hand acid-wash finish', 'Oversized back print', 'Dropped shoulders'],
   },
   {
     id: 'p5',
-    name: 'Air Max Pulse',
-    brand: 'Nike',
-    category: 'Footwear',
-    price: 180,
-    oldPrice: 210,
+    name: 'Steel Crest Striped Tee',
+    brand: 'WEARSUPER Heroes',
+    category: 'Men',
+    price: 89,
+    oldPrice: 110,
     image: shop2,
-    images: [shop2, shop5, sneakerImg],
     rating: 4.8,
     reviews: 289,
-    badge: 'New',
-    sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    badge: 'Sale',
+    sizes: APPAREL_SIZES,
+    colors: [C.cobalt, C.ivory],
     featured: true,
-    description: 'Push past your limits with bold, responsive Air cushioning and an urban-ready profile.',
-    details: ['Nike Air unit', 'Breathable mesh', 'Lightweight build', 'True to size'],
+    description: 'A bold crest on cobalt cotton, finished with varsity stripes on the sleeves. Classic hero energy.',
+    details: ['220 gsm combed cotton', 'High-density crest print', 'Varsity sleeve stripes', 'Regular fit'],
   },
   {
     id: 'p6',
-    name: 'Dunk Low Retro',
-    brand: 'Nike',
-    category: 'Footwear',
-    price: 130,
+    name: 'Midnight Bat Emblem Tee',
+    brand: 'WEARSUPER Heroes',
+    category: 'Men',
+    price: 85,
     oldPrice: null,
     image: shop3,
-    images: [shop3, shop1, sneakerImg],
     rating: 4.7,
     reviews: 341,
     badge: 'Iconic',
-    sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    sizes: APPAREL_SIZES,
+    colors: [C.ivory, C.onyx],
     featured: true,
-    description: 'Born on the hardwood, taken to the streets. A heritage silhouette in premium colours.',
-    details: ['Leather overlays', 'Foam midsole', 'Padded low-cut collar', 'True to size'],
+    description: 'Minimal and razor-sharp: a single bat emblem on an ivory boxy tee. Understated, instantly recognisable.',
+    details: ['240 gsm cotton jersey', 'Crisp emblem print', 'Boxy oversized fit', 'Pre-shrunk'],
   },
   {
     id: 'p7',
-    name: 'Blazer Mid Vintage',
-    brand: 'Nike',
-    category: 'Footwear',
-    price: 105,
+    name: 'Arc Glow Emblem Tee',
+    brand: 'WEARSUPER Heroes',
+    category: 'Men',
+    price: 99,
     oldPrice: 135,
     image: shop4,
-    images: [shop4, shop6, sneakerImg],
     rating: 4.5,
     reviews: 98,
     badge: 'Sale',
-    sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    sizes: APPAREL_SIZES,
+    colors: [C.onyx, C.graphite],
     featured: true,
-    description: 'Old-school basketball attitude with a broken-in vintage midsole and clean lines.',
-    details: ['Vintage midsole', 'Leather upper', 'Exposed foam tongue', 'True to size'],
+    description: 'An arc-reactor emblem that seems to glow against deep onyx cotton. Made for the after-dark crowd.',
+    details: ['220 gsm combed cotton', 'Luminous-effect print', 'Crew neck', 'Regular fit'],
   },
   {
     id: 'p8',
-    name: 'Air Force 1 Heritage',
-    brand: 'Nike',
-    category: 'Footwear',
-    price: 115,
+    name: 'Shield Break Graphic Tee',
+    brand: 'WEARSUPER Heroes',
+    category: 'Women',
+    price: 89,
     oldPrice: null,
     image: shop5,
-    images: [shop5, shop2, sneakerImg],
     rating: 4.9,
     reviews: 512,
     badge: 'Iconic',
-    sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    sizes: APPAREL_SIZES,
+    colors: [C.ivory, C.onyx],
     featured: true,
-    description: 'The radiance lives on. The b-ball original that never left the conversation.',
-    details: ['Full-grain leather', 'Air-Sole unit', 'Perforated toe', 'True to size'],
+    description: 'A star shield bursting through the fabric in a hyper-real cracked-wall print. Relaxed and effortless.',
+    details: ['230 gsm organic cotton', '3D cracked-effect print', 'Relaxed fit', 'Soft enzyme wash'],
   },
   {
     id: 'p9',
-    name: 'Zoom Vomero 5',
-    brand: 'Nike',
-    category: 'Footwear',
-    price: 160,
+    name: 'Spider Emblem Oversized Tee',
+    brand: 'WEARSUPER Heroes',
+    category: 'Men',
+    price: 95,
     oldPrice: null,
     image: shop6,
-    images: [shop6, shop4, sneakerImg],
     rating: 4.6,
     reviews: 143,
     badge: 'New',
-    sizes: SHOE_SIZES,
-    colors: NEUTRALS,
+    sizes: APPAREL_SIZES,
+    colors: [C.ivory, C.onyx],
     featured: true,
-    description: 'Carve a new lane with layered textures, plush cushioning and a complex, retro-runner design.',
-    details: ['ZoomX-inspired cushioning', 'Layered mesh upper', 'Chunky sole', 'True to size'],
+    description: 'A crimson spider emblem on an off-white heavyweight tee: the collection mark in its purest form.',
+    details: ['260 gsm cotton jersey', 'Crimson puff-print emblem', 'Oversized fit', 'Ribbed crew neck'],
   },
   {
     id: 'p10',
-    name: 'Eclipse Wool Overcoat',
+    name: 'Midnight Tech Jacket',
     brand: 'WEARSUPER Atelier',
     category: 'Outerwear',
     price: 449,
     oldPrice: 520,
     image: jacketImg,
-    images: [jacketImg, menImg, shop3],
     rating: 4.9,
     reviews: 76,
     badge: 'Signature',
     sizes: APPAREL_SIZES,
-    colors: NEUTRALS,
-    featured: false,
-    description: 'A sculptural overcoat in double-faced wool. Warmth, drama and quiet luxury in one layer.',
-    details: ['Double-faced wool', 'Fully lined', 'Concealed placket', 'Dry clean only'],
+    colors: [C.onyx, C.graphite],
+    featured: true,
+    description: 'City armour for night hours. A water-repellent technical shell with a stand collar and sealed zips.',
+    details: ['Water-repellent tech shell', 'Stand collar, sealed zips', 'Articulated sleeves', 'Fully lined'],
   },
   {
     id: 'p11',
-    name: 'Seraphine Draped Dress',
-    brand: 'WEARSUPER Atelier',
+    name: 'Santiago Tee & Pleat Skirt Set',
+    brand: 'WEARSUPER Femme',
     category: 'Women',
-    price: 289,
+    price: 189,
     oldPrice: null,
     image: womenImg,
-    images: [womenImg, shop5, shop2],
     rating: 4.8,
     reviews: 134,
     badge: 'New',
     sizes: APPAREL_SIZES,
-    colors: NEUTRALS,
-    featured: false,
-    description: 'Fluid draping meets architectural structure. Designed to command any room, effortlessly.',
-    details: ['Liquid satin', 'Bias-cut drape', 'Concealed zip', 'Dry clean only'],
+    colors: [C.ivory, C.onyx],
+    featured: true,
+    description: 'A crisp logo tee paired with a knife-pleat mini skirt. Riviera-ready and weekend-perfect.',
+    details: ['Cotton jersey tee', 'Knife-pleat twill skirt', 'Hidden side zip', 'Sold as a set'],
   },
   {
     id: 'p12',
-    name: 'Little Legend Set',
+    name: 'Lilac Sailor-Collar Dress',
     brand: 'WEARSUPER Kids',
     category: 'Kids',
     price: 89,
     oldPrice: 110,
     image: kidsImg,
-    images: [kidsImg, shop6, sneakerImg],
     rating: 4.9,
     reviews: 210,
     badge: 'Sale',
-    sizes: ['2Y', '4Y', '6Y', '8Y'],
-    colors: NEUTRALS,
-    featured: false,
-    description: 'Playground-ready and premium-soft. A two-piece set that keeps up with big adventures.',
-    details: ['Organic cotton', 'Reinforced knees', 'Easy-pull waist', 'Machine wash warm'],
+    sizes: KIDS_SIZES,
+    colors: [C.lilac, C.ivory],
+    featured: true,
+    description: 'A sweet sailor collar, soft puffed sleeves and a swing silhouette made for twirling.',
+    details: ['Organic cotton poplin', 'Oversized sailor collar', 'Puff sleeves, button cuffs', 'Machine washable'],
+  },
+  {
+    id: 'p13',
+    name: 'Evergreen Rugby Polo',
+    brand: 'WEARSUPER Atelier',
+    category: 'Men',
+    price: 139,
+    oldPrice: null,
+    image: menImg,
+    rating: 4.7,
+    reviews: 91,
+    badge: 'New',
+    sizes: APPAREL_SIZES,
+    colors: [C.forest, C.ivory],
+    featured: true,
+    description: 'Deep forest heavyweight jersey with a crisp white collar: a relaxed rugby polo with clubhouse polish.',
+    details: ['300 gsm cotton jersey', 'Woven cotton-twill collar', 'Two-button placket', 'Oversized fit'],
   },
 ];
 
 export const getFeatured = () => PRODUCTS.filter((p) => p.featured);
+
+// Six studio views of the same photo: full shot plus framed close-ups of different regions.
+export const GALLERY_VIEWS = [
+  { label: 'Full view', zoom: 1, focus: '50% 50%', fit: 'contain' },
+  { label: 'Close-up', zoom: 1.45, focus: '50% 45%' },
+  { label: 'Upper detail', zoom: 2, focus: '50% 20%' },
+  { label: 'Lower detail', zoom: 2, focus: '50% 82%' },
+  { label: 'Texture', zoom: 2.6, focus: '36% 52%' },
+  { label: 'Finish', zoom: 2.6, focus: '66% 42%' },
+];
+
+export const getGallery = (product) => GALLERY_VIEWS.map((v) => ({ ...v, src: product.image }));
+
+export const getRelated = (product, count = 4) => {
+  const same = PRODUCTS.filter((p) => p.id !== product.id && p.category === product.category);
+  const rest = PRODUCTS.filter((p) => p.id !== product.id && p.category !== product.category);
+  return [...same, ...rest].slice(0, count);
+};
 
 export const getById = (id) => PRODUCTS.find((p) => p.id === id);
 

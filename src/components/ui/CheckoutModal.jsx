@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal, { CloseButton } from './Modal';
-// React is used via <React.Fragment> in the stepper below.
 import { useStore } from '../../context/StoreContext';
 import { formatPrice } from '../../data/products';
+import { getTracking, formatDate } from '../../utils/orders';
 
 const STEPS = ['Shipping', 'Payment', 'Review'];
 
@@ -17,7 +17,7 @@ const Field = ({ label, className = '', ...props }) => (
 );
 
 const Stepper = ({ step }) => (
-  <div className="flex items-center gap-2 mb-8">
+  <div className="flex items-center gap-2 mb-6 sm:mb-8">
     {STEPS.map((s, i) => (
       <React.Fragment key={s}>
         <div className="flex items-center gap-2">
@@ -28,7 +28,7 @@ const Stepper = ({ step }) => (
           >
             {i < step ? '✓' : i + 1}
           </div>
-          <span className={`text-xs uppercase tracking-widest ${i <= step ? 'text-white' : 'text-white/30'}`}>
+          <span className={`hidden sm:inline text-xs uppercase tracking-widest ${i <= step ? 'text-white' : 'text-white/30'}`}>
             {s}
           </span>
         </div>
@@ -47,9 +47,10 @@ const detectBrand = (num) => {
   return 'Card';
 };
 
-const CheckoutModal = () => {
-  const { activeModal, closeModal, cart, cartSubtotal, placeOrder, user } = useStore();
-  const open = activeModal === 'checkout';
+const CheckoutFlow = () => {
+  const { closeModal, cart, cartSubtotal, placeOrder, user, openReceipt, openOrder } = useStore();
+  const timerRef = useRef(null);
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   const [step, setStep] = useState(0);
   const [processing, setProcessing] = useState(false);
@@ -88,7 +89,7 @@ const CheckoutModal = () => {
   const confirm = () => {
     setProcessing(true);
     // Simulated payment processing — no real gateway, no card data leaves the browser.
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       const placed = placeOrder({
         items: cart,
         subtotal: cartSubtotal,
@@ -106,60 +107,59 @@ const CheckoutModal = () => {
     }, 1600);
   };
 
-  const reset = () => {
-    setStep(0);
-    setOrder(null);
-    setProcessing(false);
-    closeModal();
-  };
-
   return (
-    <Modal open={open} onClose={step === 3 ? reset : closeModal} maxWidth="max-w-xl" label="Checkout">
-      <CloseButton onClose={step === 3 ? reset : closeModal} />
+    <Modal open onClose={closeModal} maxWidth="max-w-xl" label="Checkout">
+      <CloseButton onClose={closeModal} />
 
       {/* Success screen */}
       {step === 3 && order ? (
-        <div className="p-8 md:p-10 text-center">
-          <div className="mx-auto w-20 h-20 rounded-full bg-[#c6a15b]/15 border border-[#c6a15b]/40 flex items-center justify-center mb-6">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c6a15b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+        <div className="p-6 sm:p-8 md:p-10 text-center">
+          <div className="ws-seal mx-auto w-20 h-20 rounded-full bg-[#c6a15b]/15 border border-[#c6a15b]/40 flex items-center justify-center mb-6">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#c6a15b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path className="ws-check" d="M20 6 9 17l-5-5" /></svg>
           </div>
-          <h2 className="font-display text-4xl text-white mb-2">Order Confirmed</h2>
+          <p className="text-[#c6a15b] text-[11px] font-semibold uppercase tracking-[0.3em] mb-2">Payment successful</p>
+          <h2 className="font-display text-3xl sm:text-4xl text-white mb-2">Order Confirmed</h2>
           <p className="text-white/50 mb-6">
-            Thank you, {order.address.name.split(' ')[0]}. Your order is on its way.
+            Thank you, {order.address.name.split(' ')[0]}. A receipt has been issued and your order is being prepared.
           </p>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left space-y-3 mb-6">
-            <div className="flex justify-between">
-              <span className="text-white/50 text-sm">Order number</span>
-              <span className="text-white font-semibold tracking-wider">{order.id}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50 text-sm">Total paid</span>
-              <span className="text-white font-semibold">{formatPrice(order.total)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50 text-sm">Payment</span>
-              <span className="text-white font-semibold">
-                {order.payment.brand} •••• {order.payment.last4}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-white/50 text-sm">Delivery</span>
-              <span className="text-white font-semibold">3–5 business days</span>
-            </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-6 text-left space-y-3 mb-6">
+            {[
+              ['Order number', order.id],
+              ['Tracking number', order.trackingNumber],
+              ['Invoice', order.invoiceNumber],
+              ['Paid', `${formatPrice(order.total)} · ${order.payment.brand} •••• ${order.payment.last4}`],
+              ['Estimated delivery', formatDate(getTracking(order).eta)],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-4">
+                <span className="text-white/50 text-sm">{k}</span>
+                <span className="text-white font-semibold tracking-wide text-right text-sm sm:text-base">{v}</span>
+              </div>
+            ))}
           </div>
 
-          <button
-            onClick={reset}
-            className="w-full bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors"
-          >
-            Continue Shopping
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => openReceipt(order.id)}
+              className="py-4 rounded-xl border border-white/15 text-white font-semibold uppercase tracking-[0.15em] text-xs sm:text-sm hover:border-[#c6a15b] hover:text-[#c6a15b] transition-colors"
+            >
+              View receipt
+            </button>
+            <button
+              onClick={() => openOrder(order.id)}
+              className="btn-sheen py-4 rounded-xl bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-xs sm:text-sm hover:bg-[#d8b877] transition-colors"
+            >
+              Track order
+            </button>
+          </div>
+          <button onClick={closeModal} className="mt-4 text-white/45 text-sm hover:text-white transition-colors">
+            Continue shopping
           </button>
         </div>
       ) : (
-        <div className="p-8 md:p-10">
+        <div className="p-6 sm:p-8 md:p-10">
           <p className="text-[#c6a15b] text-[11px] font-semibold uppercase tracking-[0.3em] mb-2">Secure Checkout</p>
-          <h2 className="font-display text-3xl text-white mb-6">Complete your order</h2>
+          <h2 className="font-display text-2xl sm:text-3xl text-white mb-6 pr-10">Complete your order</h2>
 
           <Stepper step={step} />
 
@@ -237,7 +237,7 @@ const CheckoutModal = () => {
               <button
                 onClick={() => setStep(step + 1)}
                 disabled={(step === 0 && !shipValid) || (step === 1 && !payValid)}
-                className="flex-1 bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="btn-sheen flex-1 bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
@@ -246,7 +246,7 @@ const CheckoutModal = () => {
               <button
                 onClick={confirm}
                 disabled={processing}
-                className="flex-1 bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
+                className="btn-sheen flex-1 bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
               >
                 {processing ? (
                   <>
@@ -263,6 +263,12 @@ const CheckoutModal = () => {
       )}
     </Modal>
   );
+};
+
+// Mounted only while open, so every checkout starts fresh and picks up the signed-in user.
+const CheckoutModal = () => {
+  const { activeModal } = useStore();
+  return activeModal === 'checkout' ? <CheckoutFlow /> : null;
 };
 
 export default CheckoutModal;

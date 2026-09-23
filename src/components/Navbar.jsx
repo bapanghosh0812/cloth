@@ -44,7 +44,7 @@ const Navbar = () => {
   };
 
   // Over the light hero frames text is black; once scrolled onto dark sections it goes light.
-  const textColor = scrolled ? 'text-white' : 'text-black';
+  const textColor = scrolled || menuOpen ? 'text-white' : 'text-black';
   const navBg = scrolled ? 'bg-black/80 backdrop-blur-xl border-b border-white/10' : 'bg-transparent';
 
   const links = [
@@ -58,14 +58,14 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-8 left-0 w-full z-50 py-4 px-6 md:px-8 lg:px-12 flex justify-between items-center transition-all duration-300 ${navBg} ${
+        className={`fixed top-8 left-0 w-full z-50 py-3.5 md:py-4 px-4 sm:px-6 md:px-8 lg:px-12 flex justify-between items-center transition-all duration-300 ${navBg} ${
           isVisible ? 'translate-y-0' : '-translate-y-[200%]'
         }`}
       >
         {/* Logo */}
         <div
           onClick={() => scrollToSection('home')}
-          className={`font-display text-2xl md:text-[1.7rem] tracking-[0.15em] uppercase cursor-pointer ${textColor}`}
+          className={`font-display text-xl sm:text-2xl md:text-[1.7rem] tracking-[0.12em] sm:tracking-[0.15em] uppercase cursor-pointer ${textColor}`}
         >
           WEAR<span className="text-[#c6a15b]">SUPER</span>
         </div>
@@ -76,7 +76,7 @@ const Navbar = () => {
             <li
               key={l.id}
               onClick={() => scrollToSection(l.id)}
-              className={`${textColor} hover:text-[#c6a15b] transition-colors cursor-pointer tracking-wide`}
+              className={`nav-link ${textColor} hover:text-[#c6a15b] transition-colors cursor-pointer tracking-wide`}
             >
               {l.label}
             </li>
@@ -84,7 +84,7 @@ const Navbar = () => {
         </ul>
 
         {/* Right icons */}
-        <div className="flex items-center gap-5 md:gap-6">
+        <div className="flex items-center gap-4 sm:gap-5 md:gap-6">
           <IconBtn onClick={() => openModal('search')} label="Search" textColor={textColor}>
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
           </IconBtn>
@@ -100,7 +100,7 @@ const Navbar = () => {
           {user ? (
             <button
               onClick={() => openModal('orders')}
-              className="hidden md:flex items-center gap-2 bg-[#c6a15b] text-black px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-[#d8b877] transition-colors"
+              className="btn-sheen hidden md:flex items-center gap-2 bg-[#c6a15b] text-black px-4 py-2.5 rounded-full text-sm font-semibold hover:bg-[#d8b877] transition-colors"
             >
               <span className="w-6 h-6 rounded-full bg-black/15 flex items-center justify-center text-xs font-bold uppercase">
                 {user.name.charAt(0)}
@@ -110,7 +110,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => openModal('auth')}
-              className="hidden md:flex items-center gap-2 bg-[#c6a15b] text-black px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#d8b877] transition-colors"
+              className="btn-sheen hidden md:flex items-center gap-2 bg-[#c6a15b] text-black px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#d8b877] transition-colors"
             >
               Sign In
               <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
@@ -137,8 +137,14 @@ const Navbar = () => {
             </button>
           ))}
           <button
+            onClick={() => { setMenuOpen(false); openModal('orders'); }}
+            className="text-white/70 font-display text-2xl hover:text-[#c6a15b] transition-colors"
+          >
+            My Orders
+          </button>
+          <button
             onClick={() => { setMenuOpen(false); openModal(user ? 'orders' : 'auth'); }}
-            className="mt-4 bg-[#c6a15b] text-black px-8 py-3 rounded-full font-semibold uppercase tracking-widest text-sm"
+            className="btn-sheen mt-4 bg-[#c6a15b] text-black px-8 py-3 rounded-full font-semibold uppercase tracking-widest text-sm"
           >
             {user ? `Account · ${user.name.split(' ')[0]}` : 'Sign In'}
           </button>

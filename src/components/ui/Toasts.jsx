@@ -23,12 +23,12 @@ const Toasts = () => {
   const { toasts, dismissToast } = useStore();
 
   return createPortal(
-    <div className="fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none">
+    <div className="fixed top-3 inset-x-3 sm:inset-x-auto sm:top-6 sm:right-6 z-[200] flex flex-col items-stretch sm:items-end gap-3 pointer-events-none">
       {toasts.map((t) => (
         <div
           key={t.id}
           onClick={() => dismissToast(t.id)}
-          className="ws-toast pointer-events-auto flex items-center gap-3 min-w-[260px] max-w-[360px] bg-[#0f0f0f]/95 backdrop-blur-xl border border-white/10 text-white rounded-2xl px-5 py-4 shadow-2xl cursor-pointer"
+          className="ws-toast pointer-events-auto flex items-center gap-3 sm:min-w-[260px] sm:max-w-[360px] bg-[#0f0f0f]/95 backdrop-blur-xl border border-white/10 text-white rounded-2xl px-5 py-4 shadow-2xl cursor-pointer"
         >
           <span className={`shrink-0 ${ACCENT[t.type] || ACCENT.success}`}>
             {ICONS[t.type] || ICONS.success}

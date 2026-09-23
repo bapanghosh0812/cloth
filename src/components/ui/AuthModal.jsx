@@ -13,7 +13,7 @@ const Field = ({ label, ...props }) => (
 );
 
 const AuthModal = () => {
-  const { activeModal, closeModal, login, signup, loginAsGuest } = useStore();
+  const { activeModal, closeModal, finishAuth, afterAuth, login, signup, loginAsGuest } = useStore();
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ name: '', email: '', password: '' });
 
@@ -28,7 +28,7 @@ const AuthModal = () => {
         : signup(form.name, form.email, form.password);
     if (ok) {
       setForm({ name: '', email: '', password: '' });
-      closeModal();
+      finishAuth();
     }
   };
 
@@ -43,9 +43,11 @@ const AuthModal = () => {
           {mode === 'login' ? 'Welcome back' : 'Join the club'}
         </h2>
         <p className="text-white/50 text-sm mb-8">
-          {mode === 'login'
-            ? 'Sign in to your account to continue.'
-            : 'Create an account for exclusive drops and early access.'}
+          {afterAuth === 'checkout'
+            ? 'Sign in to continue to secure checkout.'
+            : mode === 'login'
+              ? 'Sign in to your account to continue.'
+              : 'Create an account for exclusive drops and early access.'}
         </p>
 
         <form onSubmit={submit} className="flex flex-col gap-4">
@@ -57,7 +59,7 @@ const AuthModal = () => {
 
           <button
             type="submit"
-            className="mt-2 w-full bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors"
+            className="btn-sheen mt-2 w-full bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors"
           >
             {mode === 'login' ? 'Sign In' : 'Create Account'}
           </button>
@@ -72,7 +74,7 @@ const AuthModal = () => {
         <button
           onClick={() => {
             loginAsGuest();
-            closeModal();
+            finishAuth();
           }}
           className="w-full border border-white/15 text-white font-semibold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-white/5 transition-colors"
         >

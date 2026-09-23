@@ -7,6 +7,7 @@ import {
   useCallback,
   useMemo,
 } from 'react';
+import { CARRIER, SERVICE, getTracking, newOrderIds } from '../utils/orders';
 
 const StoreContext = createContext(null);
 
@@ -35,10 +36,14 @@ export const StoreProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => load('ws_wishlist', []));
   const [orders, setOrders] = useState(() => load('ws_orders', []));
   const [user, setUser] = useState(() => load('ws_user', null));
+  const [userReviews, setUserReviews] = useState(() => load('ws_reviews', {}));
+  const [helpfulVotes, setHelpfulVotes] = useState(() => load('ws_helpful', {}));
 
   // ---- Ephemeral UI state ----
   const [toasts, setToasts] = useState([]);
-  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'cart' | 'checkout' | 'search' | 'wishlist' | 'orders' | 'quickview'
+  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'cart' | 'checkout' | 'search' | 'wishlist' | 'orders' | 'order' | 'receipt' | 'quickview'
+  const [activeOrderId, setActiveOrderId] = useState(null);
+  const [afterAuth, setAfterAuth] = useState(null); // modal to continue to once signed in
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [shopCategory, setShopCategory] = useState('All');
 
@@ -46,6 +51,8 @@ export const StoreProvider = ({ children }) => {
   useEffect(() => save('ws_wishlist', wishlist), [wishlist]);
   useEffect(() => save('ws_orders', orders), [orders]);
   useEffect(() => save('ws_user', user), [user]);
+  useEffect(() => save('ws_reviews', userReviews), [userReviews]);
+  useEffect(() => save('ws_helpful', helpfulVotes), [helpfulVotes]);
 
   // ---- Toasts ----
   const toast = useCallback((message, type = 'success') => {
@@ -61,7 +68,26 @@ export const StoreProvider = ({ children }) => {
 
   // ---- Modals ----
   const openModal = useCallback((name) => setActiveModal(name), []);
-  const closeModal = useCallback(() => setActiveModal(null), []);
+  const closeModal = useCallback(() => {
+    setActiveModal(null);
+    setAfterAuth(null);
+  }, []);
+  // Opens `next` straight away when signed in, otherwise asks to sign in first and continues after.
+  const requireAuth = useCallback(
+    (next) => {
+      if (user) {
+        setActiveModal(next);
+      } else {
+        setAfterAuth(next);
+        setActiveModal('auth');
+      }
+    },
+    [user]
+  );
+  const finishAuth = useCallback(() => {
+    setActiveModal(afterAuth);
+    setAfterAuth(null);
+  }, [afterAuth]);
 
   // Lock body scroll while any overlay is open.
   useEffect(() => {
@@ -207,16 +233,18 @@ export const StoreProvider = ({ children }) => {
   // ---- Orders ----
   const placeOrder = useCallback(
     ({ items, subtotal, shipping, total, address, payment }) => {
+      const now = new Date();
       const order = {
-        id: 'WS-' + Date.now().toString().slice(-8),
-        date: new Date().toISOString(),
+        ...newOrderIds(now),
+        date: now.toISOString(),
+        carrier: CARRIER,
+        service: SERVICE,
         items,
         subtotal,
         shipping,
         total,
         address,
         payment, // only the safe last-4 + brand, never full card data
-        status: 'Confirmed',
       };
       setOrders((prev) => [order, ...prev]);
       setCart([]);
@@ -224,6 +252,47 @@ export const StoreProvider = ({ children }) => {
     },
     []
   );
+
+  const cancelOrder = useCallback(
+    (id) => {
+      const order = orders.find((o) => o.id === id);
+      if (!order || !getTracking(order).cancellable) {
+        toast('This order has already shipped and can no longer be cancelled', 'error');
+        return;
+      }
+      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, cancelledAt: new Date().toISOString() } : o)));
+      toast(`Order ${id} cancelled — refund issued`, 'info');
+    },
+    [orders, toast]
+  );
+
+  const openOrder = useCallback((id) => {
+    setActiveOrderId(id);
+    setActiveModal('order');
+  }, []);
+  const openReceipt = useCallback((id) => {
+    setActiveOrderId(id);
+    setActiveModal('receipt');
+  }, []);
+  const activeOrder = useMemo(() => orders.find((o) => o.id === activeOrderId) || null, [orders, activeOrderId]);
+
+  // ---- Reviews ----
+  const addReview = useCallback(
+    (productId, review) => {
+      const entry = { ...review, id: `${productId}-u-${uid()}`, date: new Date().toISOString(), helpful: 0, verified: false, mine: true };
+      setUserReviews((prev) => ({ ...prev, [productId]: [entry, ...(prev[productId] || [])] }));
+      toast('Thank you — your review is live');
+    },
+    [toast]
+  );
+  const toggleHelpful = useCallback((reviewId) => {
+    setHelpfulVotes((prev) => {
+      const next = { ...prev };
+      if (next[reviewId]) delete next[reviewId];
+      else next[reviewId] = true;
+      return next;
+    });
+  }, []);
 
   const value = {
     // cart
@@ -241,6 +310,15 @@ export const StoreProvider = ({ children }) => {
     // orders
     orders,
     placeOrder,
+    cancelOrder,
+    activeOrder,
+    openOrder,
+    openReceipt,
+    // reviews
+    userReviews,
+    addReview,
+    helpfulVotes,
+    toggleHelpful,
     // auth
     user,
     login,
@@ -255,6 +333,9 @@ export const StoreProvider = ({ children }) => {
     activeModal,
     openModal,
     closeModal,
+    requireAuth,
+    finishAuth,
+    afterAuth,
     quickViewProduct,
     openQuickView,
     shopCategory,

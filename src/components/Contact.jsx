@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import img1 from '../assets/shop/image.png';
-import img2 from '../assets/shop/image copy.png';
-import img3 from '../assets/shop/image copy 2.png';
-import img4 from '../assets/shop/image copy 3.png';
-import img5 from '../assets/shop/image copy 4.png';
-import img6 from '../assets/shop/image copy 5.png';
+import img1 from '../assets/shop/shop-1.webp';
+import img2 from '../assets/shop/shop-2.webp';
+import img3 from '../assets/shop/shop-3.webp';
+import img4 from '../assets/shop/shop-4.webp';
+import img5 from '../assets/shop/shop-5.webp';
+import img6 from '../assets/shop/shop-6.webp';
 import { useStore } from '../context/StoreContext';
 
 const Contact = () => {
   const { toast } = useStore();
   const images = [img1, img2, img3, img4, img5, img6];
-  const marqueeImages = [...images, ...images, ...images, ...images, ...images, ...images];
+  const marqueeImages = [...images, ...images, ...images, ...images];
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -26,7 +26,7 @@ const Contact = () => {
   };
 
   return (
-    <section className="relative w-screen min-h-screen bg-[#f5f1ea] overflow-hidden flex items-center justify-center py-24">
+    <section className="relative w-full min-h-screen bg-[#f5f1ea] overflow-hidden flex items-center justify-center py-20 md:py-24">
       <style>
         {`
           @keyframes marqueeLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -39,33 +39,33 @@ const Contact = () => {
       <div className="absolute inset-0 z-0 flex flex-col justify-center gap-6 opacity-25 pointer-events-none scale-110">
         <div className="flex gap-6 animate-marquee-left">
           {marqueeImages.map((src, i) => (
-            <img key={`r1-${i}`} src={src} alt="bg" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
+            <img key={`r1-${i}`} src={src} alt="" loading="lazy" decoding="async" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
           ))}
         </div>
         <div className="flex gap-6 animate-marquee-right">
           {marqueeImages.map((src, i) => (
-            <img key={`r2-${i}`} src={src} alt="bg" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
+            <img key={`r2-${i}`} src={src} alt="" loading="lazy" decoding="async" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
           ))}
         </div>
         <div className="flex gap-6 animate-marquee-left">
           {marqueeImages.map((src, i) => (
-            <img key={`r3-${i}`} src={src} alt="bg" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
+            <img key={`r3-${i}`} src={src} alt="" loading="lazy" decoding="async" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
           ))}
         </div>
         <div className="flex gap-6 animate-marquee-right">
           {marqueeImages.map((src, i) => (
-            <img key={`r4-${i}`} src={src} alt="bg" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
+            <img key={`r4-${i}`} src={src} alt="" loading="lazy" decoding="async" className="w-[300px] h-[220px] object-cover rounded-2xl shrink-0 shadow-lg" />
           ))}
         </div>
       </div>
 
-      <div className="relative z-10 w-full max-w-lg px-8">
-        <div className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-[2rem] p-10 shadow-2xl flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-lg px-4 sm:px-8">
+        <div className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-[2rem] p-6 sm:p-10 shadow-2xl flex flex-col items-center">
           <p className="text-[#a17c2e] text-[12px] font-semibold uppercase tracking-[0.3em] mb-3">Concierge</p>
           <h2 className="font-display text-4xl md:text-5xl tracking-tight text-black mb-2 text-center">
             Let's Connect
           </h2>
-          <p className="text-gray-600 mb-10 text-center text-sm md:text-base font-medium">
+          <p className="text-gray-600 mb-8 sm:mb-10 text-center text-sm md:text-base font-medium">
             Have a question or collaboration idea? Drop us a line.
           </p>
 

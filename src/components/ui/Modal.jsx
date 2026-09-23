@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
  *  - 'center'  → centered dialog (auth, checkout, quick view)
  *  - 'right'   → slide-in drawer from the right (cart, wishlist, orders)
  */
-const Modal = ({ open, onClose, children, variant = 'center', maxWidth = 'max-w-lg', label }) => {
+const Modal = ({ open, onClose, children, variant = 'center', maxWidth = 'max-w-lg', label, className = '' }) => {
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -20,7 +20,7 @@ const Modal = ({ open, onClose, children, variant = 'center', maxWidth = 'max-w-
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[150] flex"
+      className={`fixed inset-0 z-[150] ${isDrawer ? 'flex' : 'overflow-y-auto overscroll-contain'} ${className}`}
       role="dialog"
       aria-modal="true"
       aria-label={label}
@@ -28,7 +28,7 @@ const Modal = ({ open, onClose, children, variant = 'center', maxWidth = 'max-w-
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="ws-backdrop absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="ws-backdrop fixed inset-0 bg-black/70 backdrop-blur-sm"
       />
 
       {isDrawer ? (
@@ -36,8 +36,9 @@ const Modal = ({ open, onClose, children, variant = 'center', maxWidth = 'max-w-
           {children}
         </div>
       ) : (
-        <div className="relative m-auto w-full px-4 py-8 flex items-center justify-center min-h-full">
-          <div className={`ws-pop relative w-full ${maxWidth} bg-[#0c0c0c] border border-white/10 rounded-[1.75rem] shadow-2xl overflow-hidden`}>
+        // Scrollable on small screens: dialogs taller than the viewport (checkout, quick view) stay reachable.
+        <div className="relative min-h-full w-full px-3 sm:px-4 py-6 sm:py-8 flex items-center justify-center pointer-events-none">
+          <div className={`ws-pop pointer-events-auto relative w-full ${maxWidth} bg-[#0c0c0c] border border-white/10 rounded-[1.75rem] shadow-2xl overflow-hidden`}>
             {children}
           </div>
         </div>

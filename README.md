@@ -4,25 +4,26 @@ A premium, fully interactive e-commerce experience built with **React 19 + Vite 
 
 ## ✨ Features
 
-- **Cinematic hero** — 240-frame scroll-scrubbed image sequence (Apple-style) with a custom preloader and intro animation.
-- **Working cart** — add from the hero, the shop grid or quick-view; slide-in bag with quantity controls, live subtotal and free-shipping threshold. Badge count in the navbar.
-- **Demo login / signup** — any email + password works, plus a one-tap "Continue as Guest". Session persists across refreshes. *(No real credentials are stored or sent.)*
-- **Multi-step checkout** — Shipping → Payment → Review → Confirmation, with a **simulated** payment (test card `4242 4242 4242 4242`). No real payment gateway; card details never leave the browser and only the brand + last-4 are kept with the order.
-- **Order history** — placed orders are saved and shown in the account panel.
-- **Search overlay** — instant product search with trending suggestions.
-- **Wishlist** — save/remove items, badge count, dedicated drawer.
-- **Product quick-view** — gallery, size & colour selection, ratings, quantity, add-to-bag.
-- **Shop filters** — filter the catalogue by category; the collection tiles deep-link into a filtered shop.
-- **Premium polish** — Playfair Display + Manrope typography, champagne-gold accent system, announcement bar, trust-badge strip, toast notifications, responsive layout and a mobile menu.
+- **Cinematic hero** — scroll-scrubbed image sequence (Apple-style). Loads progressively (coarse frames first) so the site opens in about 2–3 seconds; phones get a lighter 120-frame set, and portrait screens get a dedicated layout with the headline above the model.
+- **Luxury product pages** — six framed photo views per product, desktop hover-zoom, a drag-to-rotate **360° viewer** (auto-rotate, inertia, keyboard), size guides, "Buy it now", delivery promises and "You may also like".
+- **Client reviews** — rating summary with a 5★→1★ breakdown (click to filter), fit meter, sorting, "Helpful" votes, and a write-a-review form with a star picker.
+- **Working cart & wishlist** — add from the hero, the shop grid or a product page; live totals and free-shipping threshold.
+- **Demo login / signup** — any email + password, or "Continue as Guest"; signing in from checkout continues straight to checkout. *(No real credentials are stored or sent.)*
+- **Multi-step checkout** — Shipping → Payment → Review → Confirmation with a **simulated** payment (test card `4242 4242 4242 4242`). Only the card brand + last-4 are kept.
+- **Receipt / invoice** — every order gets an invoice number and a printable receipt (Print / Save as PDF).
+- **Order tracking** — order number + tracking number, carrier, estimated delivery and a live timeline (placed → confirmed → packed → shipped → in transit → out for delivery → delivered) that advances with real time; look up orders by order or tracking number; cancel before shipping.
+- **Search, filters & premium polish** — instant search, category filters, gold accent system, toasts, button sheen, responsive layouts and a mobile menu.
 
-All shopping state (cart, wishlist, orders, session) persists in `localStorage`, so nothing is lost on refresh.
+All shopping state (cart, wishlist, orders, reviews, session) persists in `localStorage`.
 
 ## 🧱 Tech
 
 - React 19 · Vite · Tailwind CSS v4 · GSAP (ScrollTrigger)
 - Global state via a single React Context (`src/context/StoreContext.jsx`)
 - Product catalogue in `src/data/products.js`
-- Feature overlays in `src/components/ui/`
+- Feature overlays in `src/components/ui/` (product page, 360° viewer, reviews, checkout, receipt, order tracking)
+- Order numbers / tracking timeline in `src/utils/orders.js`, progressive frame loading in `src/hooks/useImageSequence.js`
+- `netlify.toml` sets the build and long-term caching for hashed assets
 
 ## 🚀 Getting started
 

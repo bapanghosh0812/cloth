@@ -19,7 +19,9 @@ import CheckoutModal from './components/ui/CheckoutModal';
 import SearchOverlay from './components/ui/SearchOverlay';
 import WishlistDrawer from './components/ui/WishlistDrawer';
 import OrdersModal from './components/ui/OrdersModal';
-import ProductQuickView from './components/ui/ProductQuickView';
+import ProductDetail from './components/ui/ProductDetail';
+import OrderDetail from './components/ui/OrderDetail';
+import ReceiptModal from './components/ui/Receipt';
 
 const App = () => {
   return (
@@ -45,7 +47,9 @@ const App = () => {
         <SearchOverlay />
         <WishlistDrawer />
         <OrdersModal />
-        <ProductQuickView />
+        <ProductDetail />
+        <OrderDetail />
+        <ReceiptModal />
       </div>
     </StoreProvider>
   );

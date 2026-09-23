@@ -6,7 +6,7 @@ const CartDrawer = () => {
   const {
     activeModal,
     closeModal,
-    openModal,
+    requireAuth,
     cart,
     cartSubtotal,
     cartCount,
@@ -20,11 +20,7 @@ const CartDrawer = () => {
 
   const goCheckout = () => {
     if (cart.length === 0) return;
-    if (!user) {
-      openModal('auth');
-      return;
-    }
-    openModal('checkout');
+    requireAuth('checkout');
   };
 
   return (
@@ -116,7 +112,7 @@ const CartDrawer = () => {
             </div>
             <button
               onClick={goCheckout}
-              className="w-full bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors mt-2"
+              className="btn-sheen w-full bg-[#c6a15b] text-black font-bold uppercase tracking-[0.15em] text-sm py-4 rounded-xl hover:bg-[#d8b877] transition-colors mt-2"
             >
               {user ? 'Proceed to Checkout' : 'Sign in to Checkout'}
             </button>

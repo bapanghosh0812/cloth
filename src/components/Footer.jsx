@@ -22,7 +22,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full bg-black text-white pt-24 pb-8 px-8 md:px-16 lg:px-32 border-t border-white/10 overflow-hidden">
+    <footer className="w-full bg-black text-white pt-16 md:pt-24 pb-8 px-6 sm:px-8 md:px-16 lg:px-32 border-t border-white/10 overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
         <div className="flex flex-col gap-4">
           <h3 className="text-sm font-bold uppercase tracking-[0.2em] mb-2 text-[#c6a15b]">Explore</h3>
