@@ -29,7 +29,8 @@ Cart, wishlist and reviews live in `localStorage`; accounts and orders live in M
    ├─ src/models/          User, Product, Order (Mongoose)
    ├─ src/routes/          auth, products, orders
    ├─ src/middleware/      JWT auth, error handling
-   └─ test/                API tests (in-memory MongoDB)
+   ├─ functions/api.js     the same API as a Netlify Function
+   └─ test/                API + function tests (in-memory MongoDB)
 ```
 
 ## 🔌 API
@@ -63,7 +64,7 @@ Authenticated routes expect `Authorization: Bearer <token>`. Errors are returned
 npm run server:install
 ```
 
-Copy `server/.env.example` to `server/.env`, paste your connection string into `MONGODB_URI` (fill in the user/password and add `/wearsuper` as the database name) and set a long random `JWT_SECRET`. Then:
+Copy `server/.env.example` to `server/.env`, paste your connection string into `MONGODB_URI` (replace `<db_password>` with the real password) and set a long random `JWT_SECRET`. Then:
 
 ```bash
 npm run server
@@ -88,25 +89,24 @@ Open `http://localhost:5173`. In development Vite forwards `/api` to the API on 
 npm --prefix server test
 ```
 
-## ☁️ Deploy
+## ☁️ Deploy (everything on Netlify)
 
-**API → Render (free web service)**
+The storefront and the API deploy together: the Express app runs as a Netlify Function (`server/functions/api.js`) and `netlify.toml` routes `/api/*` to it, so the site and API share one address.
 
-1. New **Web Service** → connect this GitHub repo.
-2. Root directory `server`, build command `npm install`, start command `npm start`.
-3. Environment variables: `MONGODB_URI`, `JWT_SECRET` (a new random value for production) and `CLIENT_ORIGIN=https://<your-site>.netlify.app`.
-4. In Atlas **Network Access**, allow `0.0.0.0/0` (Render's free tier has no fixed IP address).
+1. **MongoDB Atlas** → **Network Access** → *Add IP Address* → *Allow access from anywhere* (`0.0.0.0/0`), because Netlify Functions don't have a fixed IP.
+2. **Netlify** → your site → **Site configuration → Environment variables** → add
+   - `MONGODB_URI` — the Atlas connection string with your real database password (no `<…>` placeholders)
+   - `JWT_SECRET` — a long random string (`node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`)
+3. Push to GitHub (or *Deploys → Trigger deploy*). Then open `https://<your-site>.netlify.app/api/health` — it should show `{"ok":true,"db":"connected"}`. If something is wrong, the same URL explains what to fix.
 
-**Storefront → Netlify**
+The 13 products are added to the database automatically on the first request.
 
-Add an environment variable `VITE_API_URL=https://<your-api>.onrender.com/api` and redeploy. `netlify.toml` already sets the build and caching.
-
-> Render's free tier sleeps after 15 minutes without traffic, so the first request after a pause can take ~30–50 seconds. The shop keeps showing products meanwhile, and the app wakes the API on page load.
+> Prefer a separate API host? `server/` also runs as a normal Node server (`npm start`) on Render, Railway, etc. — then set `CLIENT_ORIGIN` on the API and `VITE_API_URL=https://<api-host>/api` on Netlify.
 
 ## 🔐 Security notes
 
 - Passwords: bcrypt (cost 12), never returned by the API; login errors don't reveal whether an email exists.
 - Sessions: HS256 JWTs (7 days by default) sent as a Bearer token and stored in `localStorage`.
 - Orders: server-side pricing, size/colour validation, per-user access checks, atomic cancellation.
-- Hardening: Helmet headers, CORS limited to `CLIENT_ORIGIN`, auth rate limiting, 100 kB body limit, Mongo query-operator sanitising.
+- Hardening: Helmet headers, CORS limited to `CLIENT_ORIGIN` (when the API runs on its own host), auth rate limiting, 100 kB body limit, Mongo query-operator sanitising.
 - Secrets live in `server/.env`, which is git-ignored — only `.env.example` is committed.

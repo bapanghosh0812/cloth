@@ -1,12 +1,20 @@
+// Standalone server (local development, or any Node host). On Netlify the API runs as a
+// function instead — see server/functions/api.js.
 import { loadConfig } from './config.js';
 import { connectDB, disconnectDB } from './db.js';
 import { ensureCatalog } from './catalog.js';
 import { createApp } from './app.js';
 
-const config = loadConfig();
+let config;
+try {
+  config = loadConfig();
+} catch (err) {
+  console.error(`\n[config] ${err.message}\n`);
+  process.exit(1);
+}
 
 try {
-  await connectDB(config.mongoUri);
+  await connectDB(config.mongoUri, { dbName: config.dbName });
   console.log('MongoDB connected');
 } catch (err) {
   console.error(`\nCould not connect to MongoDB: ${err.message}`);

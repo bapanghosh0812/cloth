@@ -1,13 +1,18 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { User } from '../models/User.js';
 import { requireAuth, signToken } from '../middleware/auth.js';
 import { HttpError, isEmail, text } from '../utils/http.js';
 
 const BCRYPT_COST = 12;
 // Compared against when an email is unknown, so both paths take the same time.
-const DUMMY_HASH = bcrypt.hashSync('wearsuper-timing-guard', BCRYPT_COST);
+// Created on first use rather than at startup, to keep serverless cold starts quick.
+let dummyHash;
+const getDummyHash = async () => (dummyHash ??= await bcrypt.hash('wearsuper-timing-guard', BCRYPT_COST));
+
+// Netlify passes the visitor's IP in its own header; elsewhere Express's req.ip is correct.
+const clientKey = (req) => ipKeyGenerator(req.get('x-nf-client-connection-ip') || req.ip || '0.0.0.0');
 
 export const authRouter = (config) => {
   const router = Router();
@@ -18,6 +23,7 @@ export const authRouter = (config) => {
     limit: config.authRateLimit ?? 20,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
+    keyGenerator: clientKey,
     message: { error: 'Too many attempts — please wait a few minutes and try again' },
   });
 
@@ -46,7 +52,7 @@ export const authRouter = (config) => {
     if (!email || !password) throw new HttpError(400, 'Enter your email and password');
 
     const user = await User.findOne({ email }).select('+passwordHash');
-    const ok = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
+    const ok = await bcrypt.compare(password, user?.passwordHash ?? (await getDummyHash()));
     if (!user || !ok) throw new HttpError(401, 'Incorrect email or password');
 
     res.json({ token: signToken(user, config), user });

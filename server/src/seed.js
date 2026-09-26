@@ -9,7 +9,7 @@ if (!uri) {
 }
 
 try {
-  await connectDB(uri);
+  await connectDB(uri, { dbName: process.env.MONGODB_DB?.trim() || 'wearsuper' });
   const r = await syncCatalog();
   console.log(`Catalogue synced: ${r.total} products (${r.inserted} new, ${r.updated} updated, ${r.hidden} hidden).`);
 } catch (err) {
