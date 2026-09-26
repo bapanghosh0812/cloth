@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Modal, { CloseButton } from './Modal';
 import { useStore } from '../../context/StoreContext';
 import { formatPrice } from '../../data/products';
@@ -49,16 +49,14 @@ const detectBrand = (num) => {
 
 const CheckoutFlow = () => {
   const { closeModal, cart, cartSubtotal, placeOrder, user, openReceipt, openOrder } = useStore();
-  const timerRef = useRef(null);
-  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   const [step, setStep] = useState(0);
   const [processing, setProcessing] = useState(false);
   const [order, setOrder] = useState(null);
 
   const [ship, setShip] = useState({
-    name: user?.guest ? '' : user?.name || '',
-    email: user?.email && !user?.guest ? user.email : '',
+    name: user?.name || '',
+    email: user?.email || '',
     address: '',
     city: '',
     zip: '',
@@ -86,25 +84,23 @@ const CheckoutFlow = () => {
   const fillDemoCard = () =>
     setPay({ number: '4242 4242 4242 4242', name: ship.name || 'Demo Member', expiry: '12/28', cvc: '123' });
 
-  const confirm = () => {
+  // The order is created (and priced) by the API. Payment itself is still simulated:
+  // only the card brand and last four digits are sent — the full number never leaves the browser.
+  const confirm = async () => {
     setProcessing(true);
-    // Simulated payment processing — no real gateway, no card data leaves the browser.
-    timerRef.current = setTimeout(() => {
-      const placed = placeOrder({
-        items: cart,
-        subtotal: cartSubtotal,
-        shipping,
-        total,
-        address: ship,
-        payment: {
-          brand: detectBrand(pay.number),
-          last4: pay.number.replace(/\s/g, '').slice(-4),
-        },
-      });
+    const placed = await placeOrder({
+      items: cart,
+      address: ship,
+      payment: {
+        brand: detectBrand(pay.number),
+        last4: pay.number.replace(/\s/g, '').slice(-4),
+      },
+    });
+    setProcessing(false);
+    if (placed) {
       setOrder(placed);
-      setProcessing(false);
       setStep(3);
-    }, 1600);
+    }
   };
 
   return (

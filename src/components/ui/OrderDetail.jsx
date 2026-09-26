@@ -41,6 +41,7 @@ export { StatusBadge };
 const OrderTracking = ({ order }) => {
   const { closeModal, openReceipt, cancelOrder } = useStore();
   const [now, setNow] = useState(() => Date.now());
+  const [cancelling, setCancelling] = useState(false);
 
   // Live tracking: re-evaluate the timeline every 10s while open.
   useEffect(() => {
@@ -196,10 +197,15 @@ const OrderTracking = ({ order }) => {
             </button>
             {tracking.cancellable && (
               <button
-                onClick={() => cancelOrder(order.id)}
-                className="w-full py-3.5 rounded-xl border border-white/15 text-white/70 text-sm font-semibold uppercase tracking-[0.15em] hover:border-rose-400/60 hover:text-rose-300 transition-colors"
+                onClick={async () => {
+                  setCancelling(true);
+                  await cancelOrder(order.id);
+                  setCancelling(false);
+                }}
+                disabled={cancelling}
+                className="w-full py-3.5 rounded-xl border border-white/15 text-white/70 text-sm font-semibold uppercase tracking-[0.15em] hover:border-rose-400/60 hover:text-rose-300 transition-colors disabled:opacity-50"
               >
-                Cancel order
+                {cancelling ? 'Cancelling…' : 'Cancel order'}
               </button>
             )}
             <button

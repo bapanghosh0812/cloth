@@ -18,4 +18,9 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // API server and the shared catalogue run in Node.
+    files: ['server/**/*.js', 'shared/**/*.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])

@@ -28,7 +28,7 @@ const ReviewForm = ({ product, onDone }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [form, setForm] = useState({
-    name: user && !user.guest ? user.name : '',
+    name: user?.name || '',
     location: '',
     title: '',
     body: '',

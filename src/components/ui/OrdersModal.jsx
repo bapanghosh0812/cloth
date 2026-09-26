@@ -37,7 +37,7 @@ const TrackLookup = () => {
 };
 
 const OrdersModal = () => {
-  const { activeModal, closeModal, orders, user, logout, openOrder, openReceipt } = useStore();
+  const { activeModal, closeModal, orders, ordersLoading, user, logout, openOrder, openReceipt, requireAuth } = useStore();
   const open = activeModal === 'orders';
 
   return (
@@ -52,16 +52,36 @@ const OrdersModal = () => {
           <div className="min-w-0">
             <h2 className="font-display text-2xl text-white truncate">{user ? `Hi, ${user.name.split(' ')[0]}` : 'My Orders'}</h2>
             <p className="text-white/40 text-xs uppercase tracking-widest mt-0.5">
-              {orders.length} {orders.length === 1 ? 'order' : 'orders'}{user && !user.guest ? ` · ${user.email}` : ''}
+              {user ? `${orders.length} ${orders.length === 1 ? 'order' : 'orders'} · ${user.email}` : 'Sign in to see your orders'}
             </p>
           </div>
         </div>
         <CloseButton onClose={closeModal} />
       </div>
 
-      {orders.length > 0 && <TrackLookup />}
+      {user && orders.length > 0 && <TrackLookup />}
 
-      {orders.length === 0 ? (
+      {!user ? (
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-8 gap-4">
+          <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#c6a15b]">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+          </div>
+          <p className="text-white/70">Your orders are saved to your account.</p>
+          <p className="text-white/35 text-sm max-w-xs">Sign in to track deliveries, download receipts and manage your orders on any device.</p>
+          <button
+            onClick={() => requireAuth('orders')}
+            className="btn-sheen mt-2 px-8 py-3.5 rounded-xl bg-[#c6a15b] text-black text-sm font-bold uppercase tracking-[0.15em] hover:bg-[#d8b877] transition-colors"
+          >
+            Sign in
+          </button>
+        </div>
+      ) : ordersLoading ? (
+        <div className="flex-1 px-6 py-5 flex flex-col gap-4" aria-busy="true" aria-label="Loading orders">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-44 rounded-2xl border border-white/10 bg-white/[0.03] animate-pulse" />
+          ))}
+        </div>
+      ) : orders.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-8 gap-4">
           <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>

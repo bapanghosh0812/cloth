@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useStore } from '../../context/StoreContext';
-import { PRODUCTS, searchProducts, formatPrice } from '../../data/products';
+import { searchProducts, formatPrice } from '../../data/products';
 
 const SUGGESTIONS = ['Hoodie', 'Tee', 'High-Top', 'Jacket', 'Dress'];
 
 const SearchPanel = () => {
-  const { closeModal, openQuickView } = useStore();
+  const { products, closeModal, openQuickView } = useStore();
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const SearchPanel = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [closeModal]);
 
-  const results = useMemo(() => (query ? searchProducts(query) : []), [query]);
+  const results = useMemo(() => (query ? searchProducts(products, query) : []), [products, query]);
 
   return createPortal(
     <div className="fixed inset-0 z-[160] flex flex-col">
@@ -60,7 +60,7 @@ const SearchPanel = () => {
           )}
           {!query && <p className="text-white/30 text-xs uppercase tracking-widest mb-2">Popular picks</p>}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-            {(query ? results : PRODUCTS.slice(0, 4)).map((p) => (
+            {(query ? results : products.slice(0, 4)).map((p) => (
               <button
                 key={p.id}
                 onClick={() => openQuickView(p)}

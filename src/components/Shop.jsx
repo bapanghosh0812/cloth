@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useStore } from '../context/StoreContext';
-import { PRODUCTS, CATEGORIES, formatPrice } from '../data/products';
+import { CATEGORIES, formatPrice } from '../data/products';
 
 const BADGE_STYLES = {
   'Best Seller': 'bg-[#c6a15b] text-black',
@@ -91,11 +91,11 @@ const ShopCard = ({ product }) => {
 };
 
 const Shop = () => {
-  const { shopCategory, setShopCategory } = useStore();
+  const { products, shopCategory, setShopCategory } = useStore();
 
   const filtered = useMemo(
-    () => (shopCategory === 'All' ? PRODUCTS : PRODUCTS.filter((p) => p.category === shopCategory)),
-    [shopCategory]
+    () => (shopCategory === 'All' ? products : products.filter((p) => p.category === shopCategory)),
+    [products, shopCategory]
   );
 
   return (

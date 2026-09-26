@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Secrets (database URI, JWT secret)
+.env
+.env.*
+!.env.example
+
 # Claude Code tooling
 .claude/
 

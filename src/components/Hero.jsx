@@ -5,7 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useImageSequence } from '../hooks/useImageSequence';
 
 import { useStore } from '../context/StoreContext';
-import { getById, formatPrice } from '../data/products';
+import { formatPrice } from '../data/products';
 
 gsap.registerPlugin(ScrollTrigger);
 // Mobile browsers fire `resize` whenever the URL bar shows/hides — don't re-layout the pinned hero for that.
@@ -15,11 +15,12 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 const TIMELINE_FRAMES = 240;
 const MAX_DPR = 2;
 
-// Hero cards are backed by real catalog products so Add-to-Bag / Wishlist actually work.
-const products = [
-  { ...getById('p1'), frame: 76, align: 'left' },
-  { ...getById('p2'), frame: 153, align: 'right' },
-  { ...getById('p3'), frame: 239, align: 'left' },
+// Hero cards are backed by real catalogue products so Add-to-Bag / Wishlist actually work.
+// `frame` is where each card is centred in the 240-frame scroll timeline.
+const HERO_SLOTS = [
+  { id: 'p1', frame: 76, align: 'left' },
+  { id: 'p2', frame: 153, align: 'right' },
+  { id: 'p3', frame: 239, align: 'left' },
 ];
 
 // Studio-backdrop colour sampled from a frame's top corners (cached per image).
@@ -168,6 +169,7 @@ const Hero = () => {
   const drawnRef = useRef(-1); // frame index currently on the canvas
   const drawRef = useRef(() => {});
 
+  const { getProduct } = useStore();
   const { progress, ready, frameCount, getFrame } = useImageSequence((index) => {
     // A frame closer to where the user is than the one on screen just arrived → repaint.
     const target = targetRef.current;
@@ -326,14 +328,14 @@ const Hero = () => {
       }, 0);
 
       // --- Product Cards Animations ---
-      products.forEach((prod, i) => {
+      HERO_SLOTS.forEach((slot, i) => {
         const el = cardRefs.current[i];
         if (!el) return;
         gsap.set(el, { autoAlpha: 1, y: () => window.innerHeight * 1.5 });
 
-        tl.to(el, { y: 0, duration: 40, ease: 'none' }, Math.max(0, prod.frame - 40));
-        if (i < products.length - 1) {
-          tl.to(el, { y: () => -window.innerHeight * 1.5, duration: 40, ease: 'none' }, prod.frame + 20);
+        tl.to(el, { y: 0, duration: 40, ease: 'none' }, Math.max(0, slot.frame - 40));
+        if (i < HERO_SLOTS.length - 1) {
+          tl.to(el, { y: () => -window.innerHeight * 1.5, duration: 40, ease: 'none' }, slot.frame + 20);
         }
       });
 
@@ -438,13 +440,16 @@ const Hero = () => {
       </div>
 
       {/* Product Cards Sequence */}
-      {products.map((prod, i) => (
-        <ProductCard
-          key={prod.id}
-          product={prod}
-          ref={(el) => (cardRefs.current[i] = el)}
-        />
-      ))}
+      {HERO_SLOTS.map((slot, i) => {
+        const product = getProduct(slot.id);
+        return product ? (
+          <ProductCard
+            key={slot.id}
+            product={{ ...product, align: slot.align }}
+            ref={(el) => (cardRefs.current[i] = el)}
+          />
+        ) : null;
+      })}
     </div>
   );
 };

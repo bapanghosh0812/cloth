@@ -1,4 +1,6 @@
-// Order numbers, tracking numbers and a time-based shipment timeline (demo — no real courier).
+// Time-based shipment timeline shown on the tracking page (simulated courier).
+// Order, tracking and invoice numbers are issued by the API (server/src/utils/orderRules.js),
+// which also enforces the cancellation window — keep the "shipped" offset below in sync with it.
 
 const SEC = 1000;
 const MIN = 60 * SEC;
@@ -6,18 +8,6 @@ const HOUR = 60 * MIN;
 const DAY = 24 * HOUR;
 
 export const CARRIER = 'WEARSUPER Luxe Express';
-export const SERVICE = 'Signature Delivery · Fully insured';
-
-const digits = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join('');
-
-export const newOrderIds = (now = new Date()) => {
-  const ymd = now.toISOString().slice(2, 10).replace(/-/g, '');
-  return {
-    id: `WS-${ymd}-${digits(4)}`,
-    trackingNumber: `WSX${digits(10)}`,
-    invoiceNumber: `INV-${now.getFullYear()}-${digits(6)}`,
-  };
-};
 
 // Each step becomes "done" once its offset from the order time has passed.
 const STEPS = [

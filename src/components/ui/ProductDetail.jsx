@@ -81,9 +81,9 @@ const deliveryDate = () =>
   new Date(Date.now() + 3 * 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
 const ProductDialog = ({ product: p }) => {
-  const { closeModal, addToCart, toggleWishlist, isWished, openQuickView, requireAuth, userReviews } = useStore();
+  const { products, closeModal, addToCart, toggleWishlist, isWished, openQuickView, requireAuth, userReviews } = useStore();
   const gallery = getGallery(p);
-  const related = getRelated(p);
+  const related = getRelated(products, p);
 
   const [tab, setTab] = useState('photos'); // 'photos' | '360'
   const [active, setActive] = useState(0);

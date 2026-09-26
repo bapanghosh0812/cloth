@@ -1,9 +1,9 @@
 import Modal, { CloseButton } from './Modal';
 import { useStore } from '../../context/StoreContext';
-import { formatPrice, getById } from '../../data/products';
+import { formatPrice } from '../../data/products';
 
 const WishlistDrawer = () => {
-  const { activeModal, closeModal, wishlist, toggleWishlist, addToCart, openQuickView } = useStore();
+  const { activeModal, closeModal, wishlist, toggleWishlist, addToCart, openQuickView, getProduct } = useStore();
   const open = activeModal === 'wishlist';
 
   return (
@@ -31,7 +31,7 @@ const WishlistDrawer = () => {
       ) : (
         <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
           {wishlist.map((item) => {
-            const full = getById(item.id);
+            const full = getProduct(item.id);
             return (
               <div key={item.id} className="flex gap-4">
                 <button
