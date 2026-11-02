@@ -89,7 +89,7 @@ Open `http://localhost:5173`. In development Vite forwards `/api` to the API on 
 npm --prefix server test
 ```
 
-Live Demo Link : https://official-wearsuper-cloth-store.netlify.app/
+Live Demo Link: https://official-wearsuper-cloth-store.netlify.app/
 
 ## ☁️ Deploy (everything on Netlify)
 
