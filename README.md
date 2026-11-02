@@ -89,6 +89,8 @@ Open `http://localhost:5173`. In development Vite forwards `/api` to the API on 
 npm --prefix server test
 ```
 
+Live Demo Link : https://official-wearsuper-cloth-store.netlify.app/
+
 ## ☁️ Deploy (everything on Netlify)
 
 The storefront and the API deploy together: the Express app runs as a Netlify Function (`server/functions/api.js`) and `netlify.toml` routes `/api/*` to it, so the site and API share one address.
